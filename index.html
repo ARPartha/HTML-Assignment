@@ -54,7 +54,7 @@
                 </ul> -->
                 <div style="display: flex">
                     <form class="d-flex " style="justify-content: left;">
-                        <input class="form-control me-2 border border-3 d-sm-none d-none d-md-block" type="search" placeholder="Search" aria-label="Search">
+                        <input class="form-control me-2 border border-3 d-sm-none d-none d-md-block" type="search" id="place_searching" placeholder="Search" aria-label="Search">
 
                         <input class="form-control me-2 border border-3 d-sm-none d-none d-md-block" id="datepicker" type="text" placeholder="Check In " aria-label="Search">
                         <input class="form-control me-2 border border-3 d-sm-none d-none d-md-block" id="datepicker2" type="text" placeholder="Check Out " aria-label="Search">
@@ -70,17 +70,17 @@
                     </form>
                     <form class="c" id="disable">
                         <li class="nav-item dropdown form-control me-2">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="modal" data-bs-target="#guestModal" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 
 
-                                <span>Guest</span>
+                                <span id="showguest">Guest</span>
 
                             </a>
                         </li>
                     </form>
                     <form class="c" id="disable">
                         <li class="nav-item dropdown form-control me-2">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="modal" data-bs-target="#priceModal" aria-expanded="false">
 
 
                                 <span id="showprice">price Range</span>
@@ -107,9 +107,9 @@
 
         </nav>
 
-        <!-- modal -->
+        <!--price modal -->
 
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -121,22 +121,52 @@
 
                             <p class="range-value">
 
-                                <input style="display:flex" type="text" id="amount" readonly>
+                                <input style="color: #f7941d; display: inline-block; width: fit-content;" type="text" id="amount" readonly> <span style="color: #f7941d;">Per Night</span>
                             </p>
                             <div id="slider-range" class="range-bar"></div>
 
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="rangeprice()">Save</button>
+
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-primary" style="background-color: #f7941d;" onclick="rangeprice()">Save</button>
                     </div>
                 </div>
             </div>
         </div>
 
 
-        <!-- modal -->
+        <!-- price modal -->
+
+        <!-- Guest modal -->
+        <div class="modal fade" id="guestModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"><span>Guest: </span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="parent container d-flex justify-content-center align-items-center h-100">
+                            <div class="child">
+                                <button class="redondo" style="font-size: large;" id="increment_number">
+                                +
+                                </button>
+                                <span id="updateGuestInfo" style="margin: 2em;font-size: large;"> 0 </span>
+                                <button class="redondo" id="decrement_number">
+                                    -
+                                    </button></div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-primary" style="background-color: #f7941d;" onclick="rangeprice()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- guest modal -->
         <!-- for mobile -->
 
         <nav class=" navi navbar navbar-dark bg-dark d-block d-sm-block d-md-none">
@@ -402,24 +432,30 @@
 
     <script>
         function graball() {
+            var places = document.getElementById("place_searching").value;
             var checkIn = document.getElementById("datepicker").value;
             var checkOut = document.getElementById("datepicker2").value;
-            alert(checkIn + "<br>" + checkOut);
+
+
+            var price = document.getElementById("amount").value;
+            alert(places + "\n" + checkIn + "-" + checkOut + "\n" + price);
         }
     </script>
 
     <!-- google place fetch -->
-    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSZByNw6NElBvhsAO9XX6q4DayOH7eyr0&libraries=places&callback=initMap">
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArTUpPxK58U3xCnOuoFYGMtLfce4S0Ok4&libraries=places&callback=initMap">
     </script>
     <script>
-        fetch('https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyBSZByNw6NElBvhsAO9XX6q4DayOH7eyr0&lname=india')
-            .then((resp) => {
-                return resp.json();
-            })
-            .then((data) => {
-                console.log(data);
-            })
-            .catch(err => console.error(err));
+        var placesearch = 'place_searching';
+        $(document).ready(function() {
+            var acomplete = new google.maps.places.Autocomplete((document.getElementById(placesearch)), {
+                types: ['geocode'],
+
+            });
+            google.maps.event.addListener(acomplete, 'place_changed', function() {
+                var near_place = acomplete.getplace();
+            });
+        });
     </script>
     <!-- place fetching -->
 
